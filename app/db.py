@@ -1,3 +1,4 @@
+import csv
 import sqlite3
 
 import click
@@ -41,17 +42,34 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(import_stuinfo)
+    app.cli.add_command(import_students)
+    app.cli.add_command(export_scores)
 
 
-@click.command('import-stuinfo')
-@click.option('--file', help='csv file containing student infomation.')
+@click.command('import-students')
+@click.argument('file')
 @with_appcontext
-def import_stuinfo(file):
+def import_students(file):
     """Import enrolled student infomation."""
     db = get_db()
-    c = db.cursor()
-    c.execute("insert into students (stuid, stuname) values ('MG20330010', 'Qinlin Chen')")
-    c.execute("insert into students (stuid, stuname) values ('MG20330019', 'Yicheng Huang')")
+    with open(file, 'r', encoding='utf-8') as f:
+        f_csv = csv.reader(f)
+        for row in f_csv:
+            db.execute(
+                "insert into students (stuid, stuname) values (?, ?)",
+                (row[0], row[1]))
     db.commit()
-    db.close()
+
+
+@click.command('export-scores')
+@click.option('--aname', '-a', help='which assignment.')
+@click.argument('file')
+@with_appcontext
+def export_scores(aname, file):
+    db = get_db()
+    with open(file, 'w')as f:
+        f_csv = csv.writer(f)
+        scores = db.execute(
+            'select stuid, score from scores where assignment = ?',
+            (aname, )).fetchall()
+        f_csv.writerows(scores)
