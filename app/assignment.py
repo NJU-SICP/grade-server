@@ -61,17 +61,15 @@ def is_valid_stuid(stuid):
 
 def save_score(stuid, aname, score):
     db = get_db()
-    if has_score(stuid, aname):
-        print("update:", stuid, aname, score)
-        db.execute(
-            """update scores set score = ?
-            where stuid = ? and assignment = ?""",
-            (score, stuid, aname))
-    else:
-        print("insert:", stuid, aname, score)
+    if not has_score(stuid, aname):
         db.execute(
             """insert into scores (stuid, assignment, score)
             values (?, ?, ?)""", (stuid, aname, score))
+    else:
+        db.execute(
+            """update scores set score = ?
+            where stuid = ? and assignment = ? and score < ?""",
+            (score, stuid, aname, score))
     db.commit()
 
 
