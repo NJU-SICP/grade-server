@@ -39,7 +39,7 @@ def check_assignment_config(assignment):
 
 
 class Config:
-    APP_NAME = 'ok-server'
+    APP_NAME = 'grade-server'
     SECRET_KEY = os.environ.get('SECRET_KEY', 'hard to guess string')
     ASSIGNMENTS = assignments
 
