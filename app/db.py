@@ -41,3 +41,17 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(import_stuinfo)
+
+
+@click.command('import-stuinfo')
+@click.option('--file', help='csv file containing student infomation.')
+@with_appcontext
+def import_stuinfo(file):
+    """Import enrolled student infomation."""
+    db = get_db()
+    c = db.cursor()
+    c.execute("insert into students (stuid, stuname) values ('MG20330010', 'Qinlin Chen')")
+    c.execute("insert into students (stuid, stuname) values ('MG20330019', 'Yicheng Huang')")
+    db.commit()
+    db.close()

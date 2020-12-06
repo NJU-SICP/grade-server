@@ -1,15 +1,15 @@
-DROP TABLE IF EXISTS stu;
+DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS scores;
 
-CREATE TABLE stu (
-    stuid INTEGER PRIMARY KEY,
-    username TEXT NOT NULL
+CREATE TABLE students (
+    stuid TEXT PRIMARY KEY,
+    stuname TEXT NOT NULL
 );
 
 CREATE TABLE scores (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  stuid INTEGER NOT NULL,
-  proj TEXT NOT NULL,
+  stuid TEXT NOT NULL,
+  assignment TEXT NOT NULL,
   score INTEGER NOT NULL,
-  FOREIGN KEY (stuid) REFERENCES stu (stuid)
+  PRIMARY KEY (stuid, assignment, score),
+  FOREIGN KEY (stuid) REFERENCES student (stuid)
 );

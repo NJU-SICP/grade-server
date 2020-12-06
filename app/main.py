@@ -1,8 +1,10 @@
-from flask import Blueprint, redirect, url_for
+from app import assignment
+from flask import Blueprint, render_template, current_app
 
 main = Blueprint('main', __name__)
 
 
 @main.route('/')
 def index():
-    return redirect(url_for('static', filename='index.html'))
+    anames = [ name for name in current_app.config['ASSIGNMENTS']]
+    return render_template('index.html', anames=anames)
