@@ -6,5 +6,5 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    anames = [ name for name in current_app.config['ASSIGNMENTS']]
-    return render_template('index.html', anames=anames)
+    return render_template('index.html',
+                           assignments=current_app.config['ASSIGNMENTS'])

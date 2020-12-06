@@ -2,24 +2,24 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NJU-SICP - Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NJU-SICP - Home</title>
 </head>
 
 <body>
-    <div>
-        <h1>NJU-SICP - Grader</h1>
-    </div>
-    <div>
-        <table>
-            <tr>
-                {% for aname in anames %}
-                <a href="{{ url_for('assignment.status', aname=aname) }}">{{ aname }}</a>
-                {% endfor %}
-            </tr>
-        </table>
-    </div>
+  <div>
+    <h1>NJU-SICP - Grader</h1>
+  </div>
+  <div>
+    <ul>
+      {% for aname, config in assignments.items() %}
+      <li>
+        <a href="{{ url_for('assignment.status', aname=aname) }}">{{ aname }}</a> : {{ config['ddl'] }}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
 </body>
 
 </html>
