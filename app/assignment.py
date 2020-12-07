@@ -1,7 +1,7 @@
 
 from datetime import datetime
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, current_app
 
 from . import db
 from .docker_cli import get_docker_cli
@@ -47,11 +47,9 @@ def submit(aname):
             except Exception:
                 pass
 
-    # score = assignment.score_extractor(result)
-    import random
-    score = random.randint(0, 100)
-    db.session.add(Score(aid=assignment.aid, stuid=stuid, score=score))
-    db.commit()
+    score_extractor = current_app.config['SCORE_EXTRACTORS'][assignment.score_extractor]
+    score = score_extractor(result)
+    Score.add_or_update_score(assignment.aid, stuid, score)
 
     return result, 200
 
