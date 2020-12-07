@@ -14,13 +14,12 @@ def copy_to_container(files, container, dst_path):
     return container.put_archive(dst_path, tar_data)
 
 
-def grade(grader, files, required_files_info, timeout):
-    for filename, container_map_path in required_files_info.items():
-        if not copy_to_container({filename: files[filename]}, grader,
-                              container_map_path):
-            raise RuntimeError(f'Fail to copy {filename} to the container.')
+def grade(grader, files, required_files, timeout):
+    for file in required_files:
+        if not copy_to_container({file.filename: files[file.filename]},
+                                 grader, file.container_path):
+            raise RuntimeError(
+                f'Fail to copy {file.filename} to the container.')
     grader.start()
     grader.wait(timeout=timeout)
     return grader.logs().decode(encoding='utf-8')
-
-

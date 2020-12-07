@@ -13,9 +13,10 @@
   </div>
   <div>
     <ul>
-      {% for aname, config in assignments.items() %}
+      {% for assignment in assignments %}
       <li>
-        <a href="{{ url_for('assignment.status', aname=aname) }}">{{ aname }}</a> : {{ config['ddl'] }}
+        <a href="{{ url_for('assignment.status', aname=assignment.aname) }}">{{ assignment.aname }}</a> :
+        {{ assignment.ddl }}
       </li>
       {% endfor %}
     </ul>
