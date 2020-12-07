@@ -12,6 +12,13 @@ class Student(db.Model):
                              backref=db.backref('student'),
                              lazy=True)
 
+    def is_enrolled(self):
+        return Student.query.filter_by(
+            stuid=self.stuid, stuname=self.stuname).first() is not None
+
+    def __str__(self):
+        return f'Student(id={self.stuid}, name={self.stuname})'
+
     @staticmethod
     def import_teaching_assistant():
         db.session.add(Student(stuid='TAs', stuname='TAs'))
@@ -24,10 +31,6 @@ class Student(db.Model):
             for row in f_csv:
                 db.session.add(Student(stuid=row[0], stuname=row[1]))
         db.session.commit()
-
-    @staticmethod
-    def has_student(stuid):
-        return Student.query.filter_by(stuid=stuid).first() is not None
 
 
 class RequiredFile(db.Model):
@@ -55,10 +58,6 @@ class Assignment(db.Model):
     scores = db.relationship('Score',
                              backref=db.backref('assignment'),
                              lazy=True)
-
-    @staticmethod
-    def has_assignment(aname):
-        return Assignment.query.filter_by(aname=aname).first() is not None
 
     @staticmethod
     def add_or_update_assignment(new_assignment):

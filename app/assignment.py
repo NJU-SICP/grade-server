@@ -23,12 +23,15 @@ def submit(aname):
 
     if 'stuid' not in request.form:
         return 'Student ID not found.', 400
-    stuid = request.form['stuid']
-    if not Student.has_student(stuid):
-        return f'Invalid student ID: {stuid}.', 200
+    if 'stuname' not in request.form:
+        return 'Student name not found.', 400
+
+    student = Student(
+        stuid=request.form['stuid'], stuname=request.form['stuname'])
+    if not student.is_enrolled():
+        return f'Unenrolled student: {student}.\nPlease ask TAs for help.', 200
 
     required_files = assignment.required_files
-    print(required_files)
     for required_file in required_files:
         if required_file.filename not in request.files:
             return f"Missing {required_file.filename} in submission.", 400
@@ -50,7 +53,7 @@ def submit(aname):
 
     score_extractor = current_app.config['SCORE_EXTRACTORS'][assignment.score_extractor]
     score = score_extractor(result)
-    Score.add_or_update_score(assignment.aid, stuid, score)
+    Score.add_or_update_score(assignment.aid, student.stuid, score)
 
     return result, 200
 
