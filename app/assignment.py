@@ -64,4 +64,6 @@ def status(aname):
     if not assignment:
         return f"Assignment '{aname}' doesn't exist.", 400
 
-    return render_template('assignment/status.html', aname=aname, scores=assignment.scores)
+    scores = Score.query.filter_by(
+        aid=assignment.aid).order_by(Score.stuid).all()
+    return render_template('assignment/status.html', aname=aname, scores=scores)
