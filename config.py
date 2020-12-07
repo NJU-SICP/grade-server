@@ -8,7 +8,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 def ok_extractor(result):
     p = re.compile(r"Score:\s*\n\s*Total:.*")
     score_str = p.findall(result)[0].split()[2]
-    return int(float(score_str))
+    return int(round(float(score_str)))
 
 
 def random_extractor(result):

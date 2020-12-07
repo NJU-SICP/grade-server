@@ -30,6 +30,15 @@ class Student(db.Model):
         return Student.query.filter_by(stuid=stuid).first() is not None
 
 
+class RequiredFile(db.Model):
+    __tablename__ = 'required_files'
+
+    aid = db.Column(db.Integer, db.ForeignKey('assignments.aid'),
+                    primary_key=True)
+    filename = db.Column(db.String, primary_key=True)
+    container_path = db.Column(db.String, primary_key=True)
+
+
 class Assignment(db.Model):
     __tablename__ = 'assignments'
 
@@ -56,8 +65,15 @@ class Assignment(db.Model):
         assignment = Assignment.query.filter_by(
             aname=new_assignment.aname).first()
         if assignment:
+            assignment.grader_image = new_assignment.grader_image
             assignment.ddl = new_assignment.ddl
             assignment.timeout = new_assignment.timeout
+            assignment.score_extractor = new_assignment.score_extractor
+            RequiredFile.query.filter_by(aid=assignment.aid).delete()
+            for rf in new_assignment.required_files:
+                db.session.add(RequiredFile(aid=assignment.aid,
+                                            filename=rf.filename,
+                                            container_path=rf.container_path))
             db.session.commit()
         else:
             db.session.add(new_assignment)
@@ -70,16 +86,6 @@ class Assignment(db.Model):
             f_csv = csv.writer(f)
             for record in assignment.scores:
                 f_csv.writerow([record.stuid, record.score])
-
-
-class RequiredFile(db.Model):
-    __tablename__ = 'required_files'
-
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String, nullable=False)
-    container_path = db.Column(db.String, nullable=False)
-    aid = db.Column(db.Integer, db.ForeignKey('assignments.aid'),
-                    nullable=False)
 
 
 class Score(db.Model):

@@ -28,6 +28,7 @@ def submit(aname):
         return f'Invalid student ID: {stuid}.', 200
 
     required_files = assignment.required_files
+    print(required_files)
     for required_file in required_files:
         if required_file.filename not in request.files:
             return f"Missing {required_file.filename} in submission.", 400

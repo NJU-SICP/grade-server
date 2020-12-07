@@ -29,18 +29,8 @@ def import_students(file):
 
 @app.cli.command()
 @click.argument('file')
-def add_assignment(file):
-    """Add an assignment from configuration file."""
-    with open(file, 'r', encoding='utf-8') as f:
-        obj = json.load(f)
-
-    Assignment.add_or_update_assignment(create_assignment(obj))
-
-
-@app.cli.command()
-@click.argument('file')
-def update_assignment(file):
-    """Update an assignment from configuration file."""
+def import_assignment(file):
+    """Add or update an assignment from configuration file."""
     with open(file, 'r', encoding='utf-8') as f:
         obj = json.load(f)
 
@@ -91,5 +81,5 @@ def check_assignment(obj):
 @click.option('--aname', '-a', help='which assignment.')
 @click.argument('file')
 def export_scores(aname, file):
-    """export scores of an assignment."""
+    """Export scores of an assignment."""
     Assignment.export_scores_to_csv(aname, file)
