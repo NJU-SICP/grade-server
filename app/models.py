@@ -7,7 +7,7 @@ class Student(db.Model):
     __tablename__ = 'students'
 
     stuid = db.Column(db.String(16), primary_key=True)
-    stuname = db.Column(db.String, nullable=False)
+    stuname = db.Column(db.String(64), nullable=False)
     scores = db.relationship('Score',
                              backref=db.backref('student'),
                              lazy=True)
@@ -25,11 +25,23 @@ class Student(db.Model):
         db.session.commit()
 
     @staticmethod
+    def find_student(students, stuid):
+        for student in students:
+            if student.stuid == stuid:
+                return student
+        return None
+
+    @staticmethod
     def import_from_csv(file):
+        students = Student.query.all()
         with open(file, 'r', encoding='utf-8') as f:
             f_csv = csv.reader(f)
             for row in f_csv:
-                db.session.add(Student(stuid=row[0], stuname=row[1]))
+                student = Student.find_student(students, row[0])
+                if not student:
+                    db.session.add(Student(stuid=row[0], stuname=row[1]))
+                elif student.stuname != row[1]:
+                    student.stuname = row[1]
         db.session.commit()
 
 
@@ -38,19 +50,19 @@ class RequiredFile(db.Model):
 
     aid = db.Column(db.Integer, db.ForeignKey('assignments.aid'),
                     primary_key=True)
-    filename = db.Column(db.String, primary_key=True)
-    container_path = db.Column(db.String, primary_key=True)
+    filename = db.Column(db.String(128), primary_key=True)
+    container_path = db.Column(db.String(128), primary_key=True)
 
 
 class Assignment(db.Model):
     __tablename__ = 'assignments'
 
     aid = db.Column(db.Integer, primary_key=True)
-    aname = db.Column(db.String, nullable=False)
-    grader_image = db.Column(db.String, nullable=False)
+    aname = db.Column(db.String(64), nullable=False)
+    grader_image = db.Column(db.String(64), nullable=False)
     ddl = db.Column(db.DateTime, nullable=False)
     timeout = db.Column(db.Integer, nullable=False)
-    score_extractor = db.Column(db.String, nullable=False)
+    score_extractor = db.Column(db.String(64), nullable=False)
     required_files = db.relationship('RequiredFile',
                                      backref=db.backref('assignment'),
                                      lazy=True,
@@ -69,10 +81,12 @@ class Assignment(db.Model):
             assignment.timeout = new_assignment.timeout
             assignment.score_extractor = new_assignment.score_extractor
             RequiredFile.query.filter_by(aid=assignment.aid).delete()
-            for rf in new_assignment.required_files:
-                db.session.add(RequiredFile(aid=assignment.aid,
-                                            filename=rf.filename,
-                                            container_path=rf.container_path))
+            for required_file in new_assignment.required_files:
+                db.session.add(RequiredFile(
+                    aid=assignment.aid,
+                    filename=required_file.filename,
+                    container_path=required_file.container_path
+                ))
             db.session.commit()
         else:
             db.session.add(new_assignment)
