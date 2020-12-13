@@ -3,7 +3,6 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, request, current_app
 
-from . import db
 from .docker_cli import get_docker_cli
 from .docker_utils import grade
 from .models import Assignment, Score, Student
@@ -17,9 +16,10 @@ def submit(aname):
     if not assignment:
         return f"Assignment '{aname}' doesn't exist.", 400
 
-    if datetime.now() > assignment.ddl:
-        return 'Sorry, you have exceeded the deadline, ' + \
-            f'which is {assignment.ddl}.', 200
+    grace_period = current_app.config['GRACE_PERIOD']
+    if datetime.now() > assignment.ddl + grace_period:
+        return 'Sorry, you have exceeded the deadline and the grace period ' + \
+            f'which is {assignment.ddl}(+{grace_period}).', 200
 
     if 'stuid' not in request.form:
         return 'Student ID not found.', 400
@@ -53,6 +53,13 @@ def submit(aname):
 
     score_extractor = current_app.config['SCORE_EXTRACTORS'][assignment.score_extractor]
     score = score_extractor(result)
+
+    if datetime.now() > assignment.ddl:
+        penalty = current_app.config['GRACE_PERIOD_PENALTY']
+        score = int(score * (1 - penalty))
+        result += '\nSince you submitted assignment during the grace period, ' + \
+            f'you can only get {int((1-penalty)*100)}% of your real score.\n'
+
     Score.add_or_update_score(assignment.aid, student.stuid, score)
 
     return result, 200

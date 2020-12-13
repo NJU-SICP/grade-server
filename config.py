@@ -1,6 +1,7 @@
 import os
 import re
 import random
+from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,6 +28,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
     SCORE_EXTRACTORS = score_extractors
+    GRACE_PERIOD = timedelta(days=1)
+    GRACE_PERIOD_PENALTY = 0.3
 
     @staticmethod
     def init_app(app):
