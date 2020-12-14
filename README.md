@@ -96,6 +96,8 @@
 
 把这次作业添加grade-server中。
 
+最后你需要按照`client/submit.py`的样例修改提交脚本中作业名`aname`和需要提交的文件`files`。
+
 ## DDL宽限期
 
 我们的后端可以允许学生在DDL后一段宽限期内补交作业，但是会对作业分数打一些折扣。你可以通过修改`config.py`中`Config`类的`GRACE_PERIOD`属性修改宽限期（默认1天），通过`GRACE_PERIOD_PENALTY`属性修改惩罚系数（默认扣掉30%的分数）。
@@ -111,13 +113,13 @@
 安装。然后在`/etc/supervisor/conf.d`下按如下参考添加配置文件`web.conf`：
 
     [program:grade-server]
-    command=/home/yue/nju-sicp/grade-server/venv/bin/gunicorn -w 32 -b 0.0.0.0:5000 grade-server:app
-    directory=/home/yue/nju-sicp/grade-server
+    command=/path/to/grade-server/venv/bin/gunicorn -w 32 -b 0.0.0.0:5000 grade-server:app
+    directory=/path/to/grade-server
     autostart=true
     autorestart=true
-    stdout_logfile=/home/yue/nju-sicp/grade-server/log/gunicorn.log
-    stderr_logfile=/home/yue/nju-sicp/grade-server/log/gunicorn.err
-    environment=APP_CONFIG="production",SECRET_KEY="lyggshuai"
+    stdout_logfile=/path/to/grade-server/log/gunicorn.log
+    stderr_logfile=/path/to/grade-server/log/gunicorn.err
+    environment=APP_CONFIG="production",SECRET_KEY="hard to guess string"
 
 最后使用
 
