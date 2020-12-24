@@ -13,6 +13,8 @@ dist/
 build/
 *.egg-info/
 
+.vscode
 tmp
+
 *.sqlite
 *-assign.json
